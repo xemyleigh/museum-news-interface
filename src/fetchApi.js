@@ -13,7 +13,7 @@ export const fetchNews = createAsyncThunk(
         const news = await Promise.all(data.map(async ({ date, title, content, id, link, categories }, index) => {
             let image
             if ( [2, 5, 6, 12, 13, 19].includes(index)) {
-                const imageResponse = await axios.get(`http://turgenevmus.ru/wp-json/wp/v2/media?parent=${id}`)
+                const imageResponse = await axios.get(`//turgenevmus.ru/wp-json/wp/v2/media?parent=${id}`)
                 const [ imageData ] = imageResponse.data
                 const imageInfo = imageData.description.rendered
                 image = imageInfo.split(`src="`)[1].split(`"`)[0]
