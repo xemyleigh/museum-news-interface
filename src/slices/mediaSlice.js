@@ -12,15 +12,12 @@ const mediaSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchMedia.pending, (state) => {
-                console.log('PENDING NEWS')
             })
             .addCase(fetchMedia.fulfilled, (state, { payload }) => {
-                console.log('NEWS DOWNLOADED');
-                console.log(payload);
                 state.media = payload
             })
-            .addCase(fetchMedia.rejected, (state, { payload }) => {
-                console.log('NEWS DOWNLOADING ERROR');
+            .addCase(fetchMedia.rejected, (state, action) => {
+                console.log(action.error);
             })
 
     }

@@ -5,7 +5,8 @@ const newsSlice = createSlice({
     name: 'newsSlice',
     initialState: {
         news: {},
-        ids: []
+        ids: [],
+        isLoading: true
     },
     reducers: {
 
@@ -13,17 +14,16 @@ const newsSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchNews.pending, (state) => {
-                console.log('PENDING NEWS')
+                state.isLoading = true
             })
             .addCase(fetchNews.fulfilled, (state, { payload }) => {
-                console.log('NEWS DOWNLOADED');
-                console.log(payload)
+                state.isLoading = false
                 const [ news, ids ] = payload
                 state.news = news
                 state.ids = ids
             })
             .addCase(fetchNews.rejected, (state, action) => {
-                console.log('NEWS DOWNLOADING ERROR');
+                state.isLoading = false
                 console.log(action.error)
             })
 
