@@ -11,5 +11,5 @@ const defaultOptions = {
 
 export default (date, optoins = defaultOptions) => {
     const newDate = new Date(date)
-    return newDate.toLocaleDateString('en-US', optoins)
+    return newDate.toLocaleDateString('ru-RU', optoins)
 }
