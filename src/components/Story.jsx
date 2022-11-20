@@ -1,21 +1,24 @@
 import { ListGroup } from "react-bootstrap";
 import { decode } from "html-entities";
-import parse from "html-react-parser";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { actions as openedStoryActions } from "../slices/openedStorySlice";
+import { useDispatch } from "react-redux";
 
-const Story = ({ id, title, date, image }) => {
-  console.log(id);
+const Story = ({ storyData }) => {
+  const { id, title, date, image } = storyData;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const visitStory = () => {
-    console.log(id);
     navigate(`/${id}`);
+    dispatch(openedStoryActions.setOpenedStory(storyData));
   };
   return (
     <ListGroup.Item>
       <button className="py-3 list-item" onClick={visitStory}>
         {image && (
           <div className="img-container mb-3">
-            <img className="img" src={image}></img>
+            <img className="img" src={image} alt=""></img>
           </div>
         )}
         <h4>{decode(title)}</h4>

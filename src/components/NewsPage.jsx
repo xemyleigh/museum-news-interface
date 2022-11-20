@@ -1,94 +1,61 @@
-import { fetchNews, fetchCategories, fetchMedia } from "../fetchApi";
+import { fetchNews, fetchCategories } from "../fetchApi";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Container,
-  Navbar,
-  Nav,
-  NavDropdown,
-  Row,
-  Col,
-  ListGroup,
-  Button,
-} from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Spinner } from "react-bootstrap";
 import { useEffect } from "react";
 import Story from "./Story";
 
-function NewsPage() {
+const NewsPage = () => {
   const dispatch = useDispatch();
-  const newsData = useSelector((state) => state.newsInfo.news);
-  const newsIds = useSelector((state) => state.newsInfo.ids);
-  const news = newsIds.map((id) => newsData[id]);
-  const newsFirstPart = news.slice(0, 10);
-  const newsSecondPart = news.slice(10);
-
-  const categoriesData = useSelector(
-    (state) => state.categoriesInfo.categories
-  );
-  const categoriesIds = useSelector((state) => state.categoriesInfo.ids);
-  const categories = categoriesIds.map((id) => categoriesData[id]);
+  const { news, ids, isLoading } = useSelector((state) => state.newsInfo);
+  const newsData = ids.map((id) => news[id]);
+  const newsFirstPart = newsData.slice(0, 10);
+  const newsSecondPart = newsData.slice(10, 20);
+  const newsThirdPart = newsData.slice(20);
 
   useEffect(() => {
-    dispatch(fetchNews(20));
+    dispatch(fetchNews([30, [2, 5, 6, 12, 13, 19]]));
     dispatch(fetchCategories());
   }, []);
 
-  return (
-    <>
-      <Navbar bg="light" expand="lg" className="p-3">
-        <Container className="gap-5">
-          <Navbar.Brand href="#home">Новости музея</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Главная</Nav.Link>
-              <NavDropdown
-                title="Категории"
-                id="basic-nav-dropdown"
-                className="m-0 p-0"
-              >
-                {categories.map(({ id, name }, index) => (
-                  <div key={id}>
-                    <NavDropdown.Item href="#action/3.1">
-                      {name}
-                    </NavDropdown.Item>
-                    {index !== categories.length - 1 && <NavDropdown.Divider />}
-                  </div>
-                ))}
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      <Container className="my-5">
-        <Row>
-          <Col className="d-flex justify-content-between">
-            <ListGroup variant="flush" className="list justify-content-between">
-              {newsFirstPart.map(({ id, title, date, image }) => (
-                <Story
-                  key={id}
-                  id={id}
-                  title={title}
-                  date={date}
-                  image={image}
-                />
-              ))}
-            </ListGroup>
-            <ListGroup variant="flush" className="list justify-content-between">
-              {newsSecondPart.map(({ id, title, date, image }) => (
-                <Story
-                  key={id}
-                  id={id}
-                  title={title}
-                  date={date}
-                  image={image}
-                />
-              ))}
-            </ListGroup>
-          </Col>
-        </Row>
-      </Container>
-    </>
+  const contentWhileLoading = (
+    <div className="display-block text-center my-4">
+      <Spinner
+        as="span"
+        animation="border"
+        size="lg"
+        role="status"
+        aria-hidden="true"
+        className="me-2 p-3"
+        variant="primary"
+      />
+    </div>
   );
-}
+
+  const contentWhenLoaded = (
+    <Container className="my-5">
+      <Row>
+        <Col className="d-flex justify-content-between gap-4">
+          <ListGroup variant="flush" className="list justify-content-between">
+            {newsFirstPart.map((story) => (
+              <Story storyData={story} key={story.id} />
+            ))}
+          </ListGroup>
+          <ListGroup variant="flush" className="list justify-content-between">
+            {newsSecondPart.map((story) => (
+              <Story storyData={story} key={story.id} />
+            ))}
+          </ListGroup>
+          <ListGroup variant="flush" className="list justify-content-between">
+            {newsThirdPart.map((story) => (
+              <Story storyData={story} key={story.id} />
+            ))}
+          </ListGroup>
+        </Col>
+      </Row>
+    </Container>
+  );
+
+  return <>{isLoading ? contentWhileLoading : contentWhenLoaded}</>;
+};
 
 export default NewsPage;
