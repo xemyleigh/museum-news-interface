@@ -5,19 +5,16 @@ import convertDate from './convertDate'
 
 export const fetchNews = createAsyncThunk(
     'fetchNews',
-    async (newsCount, imgIndexes) => {
-        console.log(newsCount, imgIndexes)
-
+    async ([newsCount, imgIndexes]) => {
         const { data } = await axios.get(`http://turgenevmus.ru/wp-json/wp/v2/posts?per_page=${newsCount}&_fields=id,author,link,title,content,date,categories`)
         const ids = data.map(story => story.id)
         const news = await Promise.all(data.map(async ({ date, title, content, id, link, categories }, index) => {
             let image
-            if ( [2, 5, 6, 12, 13, 19].includes(index)) {
+            if ( imgIndexes.includes(index)) {
                 const imageResponse = await axios.get(`//turgenevmus.ru/wp-json/wp/v2/media?parent=${id}`)
                 const [ imageData ] = imageResponse.data
                 const imageInfo = imageData.description.rendered
                 image = imageInfo.split(`src="`)[1].split(`"`)[0]
-                console.log(image)
             }
             const formattedDate = convertDate(date)
             const newTitle = title.rendered
@@ -28,13 +25,9 @@ export const fetchNews = createAsyncThunk(
                 content: newContent,
                 id, link, image, categories
             }
-
-
             return [ id, story ]
     }))
-
         const normalizedNews = Object.fromEntries(news)
-
         return [ normalizedNews, ids ]            
     }
 )
@@ -42,7 +35,7 @@ export const fetchNews = createAsyncThunk(
 export const fetchCategories = createAsyncThunk(
     'fetchCategories',
     async () => {
-        const { data } = await axios.get('http://turgenevmus.ru/wp-json/wp/v2/categories?_fields=id,name,link')
+        const { data } = await axios.get('http://turgenevmus.ru/wp-json/wp/v2/categories?_fields=id,name,link,slug')
         const ids = data.map(category => category.id)
         const categories = data.map((category) => {
             return [ category.id, category ]
